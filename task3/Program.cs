@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.IO.Compression;
 
 namespace task3
 {
@@ -6,11 +8,17 @@ namespace task3
     {
         private static void Main()
         {
-            //Напишите приложение для поиска заданного файла на диске.
-            //Добавьте код, использующий класс FileStream и позволяющий просматривать файл в текстовом окне.
-            //В заключение добавьте возможность сжатия найденного файла.
             var directoryInfo = new DirectoryInfo(@".");
-            directoryInfo.GetFiles();
+            var files = directoryInfo.GetFiles("task3.deps.json");
+            foreach (var file in files)
+            {
+                Console.WriteLine(file.Name + ":");
+                var streamReader = new StreamReader(file.Open(FileMode.Open));
+                Console.WriteLine(streamReader.ReadToEnd());
+                streamReader.Close();
+
+                file.OpenRead().CopyTo(new GZipStream(File.Create(file.Name + ".zip"), CompressionMode.Compress));
+            }
         }
     }
 }
